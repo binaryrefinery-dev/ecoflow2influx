@@ -1,0 +1,22 @@
+# Use the .NET 8 SDK as the build environment
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+
+# Set the working directory
+WORKDIR /app
+
+# Copy csproj and restore dependencies
+COPY ./ ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Use the .NET 8 runtime as the base image for the final stage
+FROM mcr.microsoft.com/dotnet/runtime:8.0
+
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+# Define the entrypoint
+ENTRYPOINT ["dotnet", "EcoFlow.dll"]
