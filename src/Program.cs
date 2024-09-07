@@ -7,7 +7,6 @@ using MQTTnet;
 const int PERMANENT_FAILURE = 2;
 const int TEMPORARY_FAILURE = 1;
 const int SUCCESS = 0;
-const string ECO_HOST = "https://api-a.ecoflow.com";
 
 
 Console.WriteLine("EcoFlow2Influx starting...");
@@ -28,13 +27,19 @@ var config = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
     .AddCommandLine(args)
     .Build();
 
-string? accessKey = config["AccessKey"];
-string? secretKey = config["SecretKey"];
+string? accessKey = config["EcoFlowAccessKey"];
+string? secretKey = config["EcoFlowSecretKey"];
+string? ecoHost = config["EcoFlowHost"] ?? "https://api-a.ecoflow.com";
 
 
 if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
 {
-    Console.Error.WriteLine("AccessKey and SecretKey are required.");
+    Console.Error.WriteLine("EcoFlowAccessKey and EcoFlowSecretKey are required.");
+    return PERMANENT_FAILURE;
+}
+if(string.IsNullOrEmpty(ecoHost))
+{
+    Console.Error.WriteLine("EcoFlowHost is required.");
     return PERMANENT_FAILURE;
 }
 
@@ -42,7 +47,7 @@ if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey))
 
 try
 {
-    using var ecoClient = new EcoFlowHttpClient(ECO_HOST, accessKey, secretKey);
+    using var ecoClient = new EcoFlowHttpClient(ecoHost, accessKey, secretKey);
     using var influx = new InfluxWriter(new InfluxDbConfig(config["InfluxDbUrl"]!, config["InfluxDbDatabase"]!, config["InfluxDbUsername"]!, config["InfluxDbPassword"]!));
 
     // Try to get device list

@@ -6,9 +6,8 @@ This is a simple utility that reads data from the EcoFlow API and writes it to a
 The easiest way to get up and running is with docker. You can run the following command to start the container:
 
 ```bash
-docker pull ghcr.io/binaryrefinery-dev/ecoflow2influx/ecoflow2influx:latest
 
-docker run -d --name ecoflow2influx -e EcoFlowAccessKey=<your access key> -e EcoFlowSecretKey=<your secret key> -e InfluxDbUrl=http://localhost:8086  
+docker run --name ecoflow2influx -d -e EcoFlowAccessKey=abc -e EcoFlowSecretKey=def -e InfluxDbUrl=http://localhost:8086 ghcr.io/binaryrefinery-dev/ecoflow2influx/ecoflow2influx
 
 ```
 
